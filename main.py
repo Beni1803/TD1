@@ -168,14 +168,18 @@ def affichage(message, pays_valides=None, data=None, index_choisi=None):
         )
 
 
-# ---------------------------------------------------------------
-#               Lecture du fichier:gdp_data
-# ---------------------------------------------------------------
+# ----------------------------------------------------------------
+# Fonction pour lire les données du PIB depuis un fichier CSV
+# ----------------------------------------------------------------
 def lire_gdp_data():
+    # Nom du fichier source
     fichier = "gdp_data.csv"
+    # Dictionnaire pour stocker les données lues
     data = {}
+    # Compteur pour les valeurs manquantes dans le fichier
     valeurs_manquantes = 0
 
+    # Colonnes attendues dans le fichier
     colonnes_attendues = [
         "Country",
         "Year",
@@ -185,26 +189,36 @@ def lire_gdp_data():
         "Code",
     ]
 
+    # Ouverture du fichier en mode lecture
     with open(fichier, "r") as f:
+        # Utilisation du DictReader pour lire le fichier ligne par ligne en tant que dictionnaires
         reader = csv.DictReader(f)
 
+        # Vérifier si toutes les colonnes attendues sont présentes dans le fichier
         for col in reader.fieldnames:
             if col not in colonnes_attendues:
                 print(f"Avertissement: Colonne {col} non attendue dans {fichier}")
 
+        # Conversion du reader en liste pour faciliter la manipulation
         lignes = list(reader)
+
+        # Traitement de chaque ligne du fichier
         for row in lignes:
             pays = row.get("Country")
             annee = row.get("Year")
 
+            # Si le pays ou l'année sont manquants, passer à la ligne suivante
             if not pays or not annee:
                 continue
 
+            # Conversion de l'année en entier
             annee = int(annee)
 
+            # Initialisation du dictionnaire pour un nouveau pays
             if pays not in data:
                 data[pays] = {}
 
+            # Stockage des données pour le pays et l'année correspondante
             data[pays][annee] = {
                 "GDP": row.get("GDP"),
                 "GDP-Growth": row.get("GDP-Growth"),
@@ -212,11 +226,15 @@ def lire_gdp_data():
                 "Code": row.get("Code"),
             }
 
+            # Comptage des valeurs manquantes
             for key, value in row.items():
                 if not value:
                     valeurs_manquantes += 1
 
+    # Affichage des statistiques sur les données lues
     afficher_statistiques_fichier(fichier, lignes, valeurs_manquantes)
+
+    # Retourne les données, une liste des pays et une liste des années
     return (
         data,
         set(data.keys()),
@@ -224,16 +242,18 @@ def lire_gdp_data():
     )
 
 
-# ---------------------------------------------------------------
-#               Lecture du fichier: temperatures
-# ---------------------------------------------------------------
-
-
+# ----------------------------------------------------------------
+# Fonction pour lire les données des températures depuis un fichier CSV
+# ----------------------------------------------------------------
 def lire_temperatures():
+    # Nom du fichier source
     fichier = "GlobalLandTemperaturesByCountry.csv"
+    # Dictionnaire pour stocker les données lues
     data = {}
+    # Compteur pour les valeurs manquantes dans le fichier
     valeurs_manquantes = 0
 
+    # Colonnes attendues dans le fichier
     colonnes_attendues = [
         "Country",
         "dt",
@@ -241,38 +261,50 @@ def lire_temperatures():
         "AverageTemperatureUncertainty",
     ]
 
+    # Ouverture du fichier en mode lecture
     with open(fichier, "r") as f:
+        # Utilisation du DictReader pour lire le fichier ligne par ligne en tant que dictionnaires
         reader = csv.DictReader(f)
 
+        # Vérifier si toutes les colonnes attendues sont présentes dans le fichier
         for col in reader.fieldnames:
             if col not in colonnes_attendues:
                 print(f"Avertissement: Colonne {col} non attendue dans {fichier}")
 
+        # Conversion du reader en liste pour faciliter la manipulation
         lignes = list(reader)
+
+        # Traitement de chaque ligne du fichier
         for row in lignes:
             pays = row.get("Country")
             annee = row.get("dt", "").split("-")[0]
 
+            # Si le pays ou l'année sont manquants, passer à la ligne suivante
             if not pays or not annee:
                 continue
 
+            # Conversion de l'année en entier
             annee = int(annee)
 
+            # Initialisation du dictionnaire pour un nouveau pays
             if pays not in data:
                 data[pays] = {}
 
+            # Stockage des données pour le pays et l'année correspondante
             data[pays][annee] = {
                 "AverageTemperature": row.get("AverageTemperature"),
-                "AverageTemperatureUncertainty": row.get(
-                    "AverageTemperatureUncertainty"
-                ),
+                "AverageTemperatureUncertainty": row.get("AverageTemperatureUncertainty"),
             }
 
+            # Comptage des valeurs manquantes
             for key, value in row.items():
                 if not value:
                     valeurs_manquantes += 1
 
+    # Affichage des statistiques sur les données lues
     afficher_statistiques_fichier(fichier, lignes, valeurs_manquantes)
+
+    # Retourne les données, une liste des pays et une liste des années
     return (
         data,
         set(data.keys()),
@@ -280,35 +312,46 @@ def lire_temperatures():
     )
 
 
-# ---------------------------------------------------------------
-#               Lecture du fichier: population
-# ---------------------------------------------------------------
-
-
+# ----------------------------------------------------------------
+# Fonction pour lire les données de la population depuis un fichier CSV
+# ----------------------------------------------------------------
 def lire_population():
+    # Nom du fichier source
     fichier = "World-population-by-countries-dataset.csv"
+    # Dictionnaire pour stocker les données lues
     data = {}
+    # Compteur pour les valeurs manquantes dans le fichier
     valeurs_manquantes = 0
 
+    # Colonnes minimales attendues dans le fichier
     colonnes_minimales_attendues = ["Country Name"]
 
+    # Ouverture du fichier en mode lecture
     with open(fichier, "r") as f:
+        # Utilisation du DictReader pour lire le fichier ligne par ligne en tant que dictionnaires
         reader = csv.DictReader(f)
 
+        # Vérifier si les colonnes minimales attendues sont présentes dans le fichier
         for col in colonnes_minimales_attendues:
             if col not in reader.fieldnames:
                 print(f"Avertissement: Colonne {col} manquante dans {fichier}")
 
+        # Conversion du reader en liste pour faciliter la manipulation
         lignes = list(reader)
+
+        # Traitement de chaque ligne du fichier
         for row in lignes:
             pays = row.get("Country Name")
 
+            # Si le pays est manquant, passer à la ligne suivante
             if not pays:
                 continue
 
+            # Initialisation du dictionnaire pour un nouveau pays
             if pays not in data:
                 data[pays] = {}
 
+            # Stockage des données pour le pays et chaque année
             for annee, valeur in row.items():
                 if annee.isdigit():
                     annee_int = int(annee)
@@ -316,44 +359,49 @@ def lire_population():
                         data[pays][annee_int] = {}
                     data[pays][annee_int][annee] = valeur if valeur else None
 
+                    # Comptage des valeurs manquantes
                     if not valeur:
                         valeurs_manquantes += 1
 
+    # Affichage des statistiques sur les données lues
     afficher_statistiques_fichier(fichier, lignes, valeurs_manquantes)
+
+    # Retourne les données, une liste des pays et une liste des années
     return (
         data,
         set(data.keys()),
         {year for country_data in data.values() for year in country_data.keys()},
     )
 
-
-# ---------------------------------------------------------------
-#                   Rassembler les données
-# ---------------------------------------------------------------
-
-
+# ----------------------------------------------------------------
+# Fonction pour rassembler les données de PIB, température et population
+# ----------------------------------------------------------------
 def rassembler_donnees(gdp_data, temp_data, pop_data, pays_communs, annees_communes):
+    # Initialisation d'un dictionnaire pour stocker les données consolidées
     data_final = {}
 
+    # Pour chaque pays commun entre les trois sources de données
     for pays in pays_communs:
         data_final[pays] = {}
 
+        # Pour chaque année commune entre les trois sources de données
         for annee in annees_communes:
+            
+            # Vérifiez si l'année est présente pour le pays donné dans les trois sources de données
             if (
                 annee in gdp_data.get(pays, {})
                 and annee in temp_data.get(pays, {})
                 and annee in pop_data.get(pays, {})
             ):
+                # Si oui, rassemblez les informations pertinentes de chaque source et stockez-les dans data_final
                 data_final[pays][annee] = {
-                    "temperature": temp_data[pays][annee].get("AverageTemperature"),
-                    "population": pop_data[pays][annee].get(
-                        str(annee)
-                    ),  # conversion de l'année en chaîne pour l'utiliser comme clé
-                    "gdp": gdp_data[pays][annee].get("GDP"),
+                    "temperature": temp_data[pays][annee].get("AverageTemperature"),  # Récupérer la température moyenne pour l'année donnée
+                    "population": pop_data[pays][annee].get(str(annee)),  # Récupérer la population pour l'année donnée (notez la conversion de l'année en chaîne)
+                    "gdp": gdp_data[pays][annee].get("GDP"),  # Récupérer le PIB pour l'année donnée
                 }
 
+    # Retourne le dictionnaire consolidé
     return data_final
-
 
 # ---------------------------------------------------------------
 #          calculs d'indices statistiques pour les pays
@@ -640,74 +688,96 @@ def annee_avec_plus_forte_augmentation_moyenne(dictionnaire_final):
 
 
 # ---------------------------------------------------------------
-#    Obtention des donnees pour pays choisi par l'utilisateur
+#    Obtention des données pour le pays choisi par l'utilisateur
 # ---------------------------------------------------------------
 
-
 def obtenir_donnees_pour_pays(data_final):
+    # Affiche une introduction et demande la confirmation de l'utilisateur
     reponse = affichage("intro")
     if reponse != "Y":
         affichage("merci")
         return
 
+    # Génère une liste triée de tous les pays disponibles
     pays_valides = sorted(list(data_final.keys()))
 
+    # Boucle jusqu'à ce que l'utilisateur décide de quitter ou choisisse un pays valide
     while True:
+        # Affiche la liste des pays
         affichage("liste_pays", pays_valides=pays_valides)
+        
+        # Demande à l'utilisateur de choisir un pays parmi la liste
         choix = affichage("choix_pays")
 
+        # Si le choix est un numéro valide
         if choix.isdigit():
             index_choisi = int(choix) - 1
             if 0 <= index_choisi < len(pays_valides):
+                # Affiche les données pour le pays choisi
                 affichage(
                     "donnees_pays",
                     pays_valides=pays_valides,
                     data=data_final,
                     index_choisi=index_choisi,
                 )
+                # Demande à l'utilisateur s'il souhaite voir les données d'un autre pays
                 reponse = affichage("reponse")
                 if reponse != "Y":
                     affichage("merci")
                     break
             else:
+                # Avertit l'utilisateur que le choix est invalide
                 affichage("choix_non_valide")
         else:
+            # Avertit l'utilisateur que le choix est invalide
             affichage("choix_non_valide")
-
 
 # ---------------------------------------------------------------
 #                     POINT D'ENTRÉE DU CODE
 # ---------------------------------------------------------------
+
 if __name__ == "__main__":
-    # la liste des pays présents dans le fichier GDP et les années disponibles.
+    # Charge les données de PIB depuis un fichier
     gdp_data, gdp_pays, gdp_annees = lire_gdp_data()
-    # la liste des pays présents dans le fichier des températures et les années disponibles.
+    # Charge les données de température depuis un fichier
     temp_data, temp_pays, temp_annees = lire_temperatures()
-    # la liste des pays présents dans le fichier de population et les années disponibles.
+    # Charge les données de population depuis un fichier
     pop_data, pop_pays, pop_annees = lire_population()
-    # Cela donne une liste de pays présents dans tous les fichiers.
+    
+    # Identifie les pays et les années communs entre les trois jeux de données
     pays_communs = gdp_pays.intersection(temp_pays).intersection(pop_pays)
-    # Cela donne une liste d'années présentes dans tous les fichiers.
     annees_communes = gdp_annees.intersection(temp_annees).intersection(pop_annees)
-    # Rassemble toutes les données des trois fichiers en un seul dictionnaire en utilisant uniquement les pays et les années communs.
+    
+    # Consolide les données en une seule structure
     dictionnaire_final = rassembler_donnees(
         gdp_data, temp_data, pop_data, pays_communs, annees_communes
     )
-    # Affiche les statistiques finales basées sur le dictionnaire consolidé.
+    
+    # Affiche une synthèse des données consolidées
     afficher_statistiques_finales(dictionnaire_final)
 
-    # Ajoutez cet appel après l'affichage des statistiques finales ou après obtenir_donnees_pour_pays.
+    # Affiche différentes statistiques basées sur le dictionnaire consolidé
     top_10_pays_par_croissance_population(dictionnaire_final)
     bottom_10_pays_par_croissance_population(dictionnaire_final)
     top_10_pays_par_augmentation_PIB_par_habitant(dictionnaire_final)
     bottom_10_pays_par_augmentation_PIB_par_habitant(dictionnaire_final)
     top_10_pays_par_augmentation_temperature(dictionnaire_final)
+    
+    # Recherche et affiche les pays qui figurent à la fois dans le top 10 des augmentations 
+    # de population, de PIB par habitant, et de température
     pays_communs = pays_communs_dans_top_10(dictionnaire_final)
     afficher_pays_communs(pays_communs)
+
+    # Identique au précédent mais pour le bottom 10
     pays_communs = pays_communs_dans_bottom_10(dictionnaire_final)
     afficher_pays_communs_bottom(pays_communs)
+
+    # Affiche le top 10 des pays en fonction d'un score calculé
     afficher_top_10_pays_par_score(dictionnaire_final)
+
+    # Trouve et affiche l'année avec la plus forte augmentation moyenne de température
     resultats = annee_avec_plus_forte_augmentation_moyenne(dictionnaire_final)
     afficher_resultats(*resultats)
-    # Demande à l'utilisateur de choisir un pays depuis une liste numérotée et affiche les données associées à ce pays.
+
+    # Demande à l'utilisateur de choisir un pays et affiche les données pour ce pays
     obtenir_donnees_pour_pays(dictionnaire_final)
